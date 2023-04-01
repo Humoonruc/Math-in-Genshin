@@ -44,7 +44,7 @@ plot(Ts, [100 * bs 100 * crs 100 * cds],
     xlabel=L"T", yaxis=L"\%",
     title="optimal allocation of artifact stats",
     legend=:outerright)
-savefig("./artifact-stats-allocation.png")
+# savefig("./artifacts/img/artifact-stats-allocation.png")
 
 
 ##############################################
@@ -85,4 +85,3 @@ b_max = 0.05T - 3.03cr_min
 bs = 0:0.01:b_max |> collect
 damages = damage.(bs)
 plot(bs, damages)
-
