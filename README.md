@@ -1,3 +1,7 @@
+项目地址：https://github.com/Humoonruc/Math-in-Genshin
+
+
+
 `./artifacts/`讨论了圣遗物攻击和双暴副词条的最优分配问题，得出了指导性极强的结论。
 
 `./damage-calculator/` 讨论了原神中伤害的计算公式，并在一个代码文件中举了两个例子来示范如何计算：散兵的风伤和久岐忍的超绽放。

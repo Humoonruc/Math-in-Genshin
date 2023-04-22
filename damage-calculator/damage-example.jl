@@ -67,9 +67,9 @@ lv_coef = 1447 # 90级
 
 # E 区
 type_coef = 3 # 超绽放
-master = 1000 # 千精
+master = 945 + 100 # 精1板砖精精精久岐忍，吃满双草共鸣
 master_bonus = 16 * master / (master + 2000)
-reaction_bonus = 0.8 # 花神4件套效果
+reaction_bonus = 0.8 # 花神4件套满层效果
 reaction = type_coef * (1 + master_bonus + reaction_bonus)
 
 
@@ -88,4 +88,115 @@ end
 
 # output
 output = lv_coef * reaction * resistance
-# 千精久岐忍+草套减抗，一个种子炸3万4
+
+
+
+################################
+## 例3：计算雷神E超激化伤害
+################################
+
+# A 区
+attack = 1380.4
+
+# M 区
+multiplier = 67.2 / 100
+
+# L 区
+lv_coef = 1446.88 # 90级
+
+# E 区
+type_coef = 1.15 # 超激化
+master = 1037
+master_bonus = 5 * master / (master + 1200)
+reaction_bonus = 0
+reaction = type_coef * (1 + master_bonus + reaction_bonus)
+
+# C 区
+cr = 14.3 / 100
+cd = 109.9 / 100
+critical = 1 + cr * cd
+
+
+# B 区
+bonus_coef = (12.8) / 100
+bonus = 1 + bonus_coef
+
+
+# D 区
+defense_ignore_coef = 0
+lv_player = 90
+lv_enemy = 90
+defense = (lv_player + 100) / (lv_player + 100 + (lv_enemy + 100) * (1 - defense_ignore_coef))
+
+
+# R 区
+resistance_base = 10 / 100
+resistance_debuff = 0 / 100
+resistance_coef = resistance_base - resistance_debuff
+if resistance_coef < 0
+    resistance = 1 - resistance_coef / 2
+elseif resistance_coef < 0.75
+    resistance = 1 - resistance_coef
+else
+    resistance = 1 / (1 + 4 * resistance_coef)
+end
+
+
+# output
+output = (attack * multiplier + lv_coef * reaction) * critical * bonus * defense * resistance
+
+
+
+################################
+## 例4：计算草神E蔓激化伤害
+################################
+
+# A 区
+attack = 1244.3
+
+# M 区
+multiplier_ATK = 165.12 / 100
+multiplier_master = 330.24 / 100
+
+# L 区
+lv_coef = 1446.88 # 90级
+
+# E 区
+type_coef = 1.25 # 蔓激化
+master = 852
+master_bonus = 5 * master / (master + 1200)
+reaction_bonus = 0
+reaction = type_coef * (1 + master_bonus + reaction_bonus)
+
+# C 区
+cr = 58.2 / 100 + (master - 200) * 0.03 / 100
+cd = 107.5 / 100
+critical = 1 + cr * cd
+
+# B 区
+bonus_coef = 15 / 100 + (master - 200) * 0.1 / 100
+bonus = 1 + bonus_coef
+
+# D 区
+defense_ignore_coef = 0
+lv_player = 90
+lv_enemy = 90
+defense = (lv_player + 100) / (lv_player + 100 + (lv_enemy + 100) * (1 - defense_ignore_coef))
+
+# R 区
+resistance_base = 10 / 100 # 大部分小怪的草抗与其他抗性一样为10
+resistance_debuff = 30 / 100
+resistance_coef = resistance_base - resistance_debuff
+if resistance_coef < 0
+    resistance = 1 - resistance_coef / 2
+elseif resistance_coef < 0.75
+    resistance = 1 - resistance_coef
+else
+    resistance = 1 / (1 + 4 * resistance_coef)
+end
+
+# output
+# 无蔓激化伤害
+output1 = (attack * multiplier_ATK + master * multiplier_master) * critical * bonus * defense * resistance
+# 触发蔓激化伤害
+output2 = (attack * multiplier_ATK + master * multiplier_master + lv_coef * reaction) * critical * bonus * defense * resistance

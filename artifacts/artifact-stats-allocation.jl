@@ -1,8 +1,5 @@
-# optimal allocation of artifact stats
-
-
 ##################################
-# 求解圣遗物词条最优化问题
+# optimal allocation of artifact stats：以直伤为例
 ##################################
 using JuMP, GLPK, Ipopt
 using Plots, LaTeXStrings
@@ -27,8 +24,8 @@ for i in 1:length(Ts)
     m = Model()
     set_optimizer(m, Ipopt.Optimizer)
     @variable(m, b ≥ 0)
-    @variable(m, 0 ≤ cr ≤ 1)
-    @variable(m, cd ≥ 0.5)
+    @variable(m, 0.05 ≤ cr ≤ 1) # 角色自带5%暴击率
+    @variable(m, cd ≥ 0.5) # 角色自带50%暴伤
     @NLconstraint(m, constraint, b / 0.05 + cr / 0.033 + cd / 0.066 ≤ Ts[i])
     @NLobjective(m, Max, (1 + b) * (1 + cr * cd))
     optimize!(m)
@@ -44,11 +41,11 @@ plot(Ts, [100 * bs 100 * crs 100 * cds],
     xlabel=L"T", yaxis=L"\%",
     title="optimal allocation of artifact stats",
     legend=:outerright)
-# savefig("./artifacts/img/artifact-stats-allocation.png")
+savefig("./artifacts/img/artifact-stats-allocation.png")
 
 
 ##############################################
-## 最优化问题的可视化
+## 该问题的可视化
 ##############################################
 
 using Plots
@@ -66,7 +63,7 @@ p = surface(b_domain, cr_domain, damage, c=:viridis)
 
 
 # 约束为一条线，将其绘制出来
-cr_min = 0
+cr_min = 0.05
 cr_margin = cr_min:0.01:1 |> collect
 b_margin = @. 0.05T - 3.03 * cr_margin
 plot!(p,
