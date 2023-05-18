@@ -1,11 +1,13 @@
 ## MonteCarlo Method 计算特定事件（组合）发生的次数期望
 
 
-# using Statistics
 using DataFrames
 using StatsBase
 using DataStructures
 using Plots, StatsPlots
+pythonplot()
+ENV["GKS_ENCODING"] = "utf-8"
+default(fontfamily="SimHei")
 
 
 #######################################################
@@ -195,6 +197,9 @@ P =
 # 模拟双暴分与刷取时间的关系
 #######################################################
 
+"""
+计算随机掉落5星圣遗物升满20级后的双暴分
+"""
 function get_score(main_stat)
     stats = [main_stat]
 
@@ -217,18 +222,18 @@ function get_score(main_stat)
         append!(sub_stats_pool, strengthen_stats)
     end
 
-    # 计算双暴词条数
+    # 计算双暴分
     crs = count(stat -> stat == "cr", sub_stats_pool)
     cds = count(stat -> stat == "cd", sub_stats_pool)
-    score = crs + cds # 该件圣遗物的双暴副词条数
+    score = sum(sample([5.4, 6.2, 7, 7.8], crs + cds)) # 4档数值等概率出现
 
     return score
 end
 
 
+## 以刷散兵沙楼4件套（攻风暴）为例
 
-## 散兵沙楼套，攻风暴
-N = 500 # 模拟500位玩家
+N = 1000 # 模拟 N 位玩家
 T = floor(Int64, 180 * 1.065 * 9) # 刷半年可得沙楼圣遗物总数
 
 sum_score_series = zeros(Int64, T)
@@ -289,37 +294,36 @@ for n in 1:N
         end
 
 
-        # 计算4件套双暴词条
+        # 计算4件套双暴分
         sum_score = -1
         scores = [flower, plume, sand, goblet, circlet]
         if count(score -> score == -1, scores) <= 1 # 凑齐了4件套
-            sum_score = sum(deleteat!(sort(scores), 1)) + 6 # 把词条最少的一件用散件代替，姑且算6个词条
+            sum_score = sum(deleteat!(sort(scores), 1)) + 40
+            # 把词条最少的一件用优秀散件代替，姑且算40双暴分（6个词条以上）
         end
         push!(score_series, sum_score)
         println(n, "-", t)
     end
 
+    if n % 100 == 0
+        plot((1:T) ./ (1.065 * 9), score_series, legend=false,
+            title="刷沙上楼阁4件套", xaxis="刷取天数", yaxis="双暴分")
+        savefig("./events-simulator/img/critical-stats$(Int64(n/100)).png")
+    end
     sum_score_series = sum_score_series + score_series
 end
 
 
-avg_score_series = sum_score_series / N # 500个玩家取平均，视为词条数期望的近似值
-avg_score_series[500] # 可见，全力以赴刷50天才能刷到25个双暴副词条
-avg_score_series[300]
-avg_score_series[210]
-avg_score_series[150] # 刷半个月可有21个双暴副词条
-avg_score_series[100] # 刷10天有19个词条
-avg_score_series[70] # 刷一周有16个词条
+avg_score_series = sum_score_series / N # 所有玩家取平均，视为词条数期望的近似值
+avg_score_series[500] # 刷50天能到170分，约合25个双暴副词条
+avg_score_series[400] # 刷40天能到165分
+avg_score_series[300] # 刷一个月有160分
+avg_score_series[210] # 刷三周有152分
+avg_score_series[150] # 刷半个月有142分
+avg_score_series[70] # 刷一周有110分
 
 
-ENV["GKS_ENCODING"] = "utf-8"
-default(fontfamily="SimHei")
-pythonplot()
 
 plot((1:T) ./ (1.065 * 9), avg_score_series, legend=false,
-    title="刷沙上楼阁4件套", xaxis="刷取天数", yaxis="双暴副词条数")
+    title="刷沙上楼阁4件套", xaxis="刷取天数", yaxis="双暴分")
 savefig("./events-simulator/img/critical-stats.png")
-
-
-
-
