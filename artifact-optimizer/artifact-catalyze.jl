@@ -1,7 +1,8 @@
 # optimal allocation of artifact stats: catalyze
 
 using JuMP, GLPK, Ipopt
-using PlotlyJS
+using Plots, LaTeXStrings
+# using PlotlyJS
 
 ##################################
 # 激化 (catalyze) 主 C 的圣遗物词条最优化问题——以纳西妲灭净三业为例
@@ -121,7 +122,7 @@ for i in 1:length(Ts)
             1 + (cr + (master - 200) * 0.03 / 100) * cd # critical
         ) *
         (
-            1 + 0.15+0.2+ db + (master - 200) * 0.1 / 100 # 草套2和专武效果
+            1 + 0.15 + 0.2 + db + (master - 200) * 0.1 / 100 # 草套2和专武效果
         )
     )
 
@@ -134,26 +135,37 @@ for i in 1:length(Ts)
 end
 
 
-traces = [
-    scatter(x=Ts, y=100 * bs, name="attack: green/white %"),
-    scatter(x=Ts, y=100 * crs, name="critical rate %"),
-    scatter(x=Ts, y=100 * cds, name="critical damage %"),
-    scatter(x=Ts, y=100 * dbs, name="damage bonus %"),
-    scatter(x=Ts, y=masters, name="master", yaxis="y2")
-]
-plot(traces,
-    Layout(
-        title_text="optimal allocation of artifact stats",
-        xaxis_title_text="T",
-        yaxis_title_text="%",
-        # legend=:topright,
-        yaxis2=attr(
-            title="master",
-            overlaying="y",
-            side="right"
-        )
-    )
-)
+plot(Ts, [100 * bs 100 * crs 100 * cds 100 * dbs],
+    label=["attack: green/white" "critical rate" "critical damage" "damage bonus"],
+    # line=(2, reshape([:solid, :dashdot, :dash, :dot], 1, 4)),
+    xlabel=L"T", ylabel=L"\%", title="optimize artifact stats: Nahida",
+    legend=:topright, size=(700, 500))
+plot!(twinx(), Ts, masters,
+    label="master", ylabel="",
+    ylims=(800, 1200), color=:red,
+    legend=:bottomright)
+
+
+# traces = [
+#     scatter(x=Ts, y=100 * bs, name="attack: green/white %"),
+#     scatter(x=Ts, y=100 * crs, name="critical rate %"),
+#     scatter(x=Ts, y=100 * cds, name="critical damage %"),
+#     scatter(x=Ts, y=100 * dbs, name="damage bonus %"),
+#     scatter(x=Ts, y=masters, name="master", yaxis="y2")
+# ]
+# plot(traces,
+#     Layout(
+#         title_text="optimal allocation of artifact stats",
+#         xaxis_title_text="T",
+#         yaxis_title_text="%",
+#         # legend=:topright,
+#         yaxis2=attr(
+#             title="master",
+#             overlaying="y",
+#             side="right"
+#         )
+#     )
+# )
 
 
 # 情况二：精通超过1000，达到草神天赋2的上限
@@ -192,33 +204,44 @@ for i in 1:length(Ts)
 end
 
 
-traces = [
-    scatter(x=Ts, y=100 * bs, name="attack: green/white %"),
-    scatter(x=Ts, y=100 * crs, name="critical rate %"),
-    scatter(x=Ts, y=100 * cds, name="critical damage %"),
-    scatter(x=Ts, y=100 * dbs, name="damage bonus %"),
-    scatter(x=Ts, y=masters, name="master", yaxis="y2")
-]
-plot(traces,
-    Layout(
-        title_text="optimal allocation of artifact stats",
-        xaxis_title_text="T",
-        yaxis_title_text="%",
-        # legend=:topright,
-        yaxis2=attr(
-            title="master",
-            overlaying="y",
-            side="right"
-        )
-    )
-)
+plot(Ts, [100 * bs 100 * crs 100 * cds 100 * dbs],
+    label=["attack: green/white" "critical rate" "critical damage" "damage bonus"],
+    # line=(2, reshape([:solid, :dashdot, :dash, :dot], 1, 4)),
+    xlabel=L"T", ylabel=L"\%", title="optimize artifact stats: Nahida",
+    legend=:topright, size=(700, 500))
+plot!(twinx(), Ts, masters,
+    label="master", ylabel="",
+    ylims=(800, 1200), color=:red,
+    legend=:bottomright)
+png("./artifact-optimizer/img/artifact-stats-Nahida.png")
 
-
-# 百分比攻击词条的收益是最低的，最好不要歪攻击
 # 两种情况最优的精通值都是1000，所以精通尽量往1000堆
+# 百分比攻击词条的收益是最低的，最好不要歪攻击
 # 草神圣遗物应追求的副词条是精双暴
 # T > 87，应带暴击头，精精暴
 # T < 81，应带草伤杯，精草精
+
+
+# traces = [
+#     scatter(x=Ts, y=100 * bs, name="attack: green/white %"),
+#     scatter(x=Ts, y=100 * crs, name="critical rate %"),
+#     scatter(x=Ts, y=100 * cds, name="critical damage %"),
+#     scatter(x=Ts, y=100 * dbs, name="damage bonus %"),
+#     scatter(x=Ts, y=masters, name="master", yaxis="y2")
+# ]
+# plot(traces,
+#     Layout(
+#         title_text="optimal allocation of artifact stats",
+#         xaxis_title_text="T",
+#         yaxis_title_text="%",
+#         # legend=:topright,
+#         yaxis2=attr(
+#             title="master",
+#             overlaying="y",
+#             side="right"
+#         )
+#     )
+# )
 
 
 
@@ -314,27 +337,39 @@ for i in 1:length(Ts)
 end
 
 
-traces = [
-    scatter(x=Ts, y=100 * bs, name="attack: green/white %"),
-    scatter(x=Ts, y=100 * crs, name="critical rate %"),
-    scatter(x=Ts, y=100 * cds, name="critical damage %"),
-    scatter(x=Ts, y=100 * dbs, name="damage bonus %"),
-    scatter(x=Ts, y=masters, name="master", yaxis="y2")
-]
-plot(traces,
-    Layout(
-        title_text="optimal allocation of artifact stats",
-        xaxis_title_text="T",
-        yaxis_title_text="%",
-        # legend=:topright,
-        yaxis2=attr(
-            title="master",
-            overlaying="y",
-            side="right"
-        )
-    )
-)
+plot(Ts, [100 * bs 100 * crs 100 * cds 100 * dbs],
+    label=["attack: green/white" "critical rate" "critical damage" "damage bonus"],
+    line=(2, reshape([:solid, :dashdot, :dash, :dot], 1, 4)),
+    xlabel=L"T", ylabel=L"\%", title="optimize artifact stats: Tighnari",
+    legend=:topright, size=(700, 500))
+plot!(twinx(), Ts, masters,
+    label="master", ylabel="",
+    ylims=(400, 800), color=:red,
+    legend=:bottomright)
+png("./artifact-optimizer/img/artifact-stats-Tighnari.png")
 # 可见：
 # 1. 装备精草暴后，对于蔓激化伤害，提纳里的攻击和精通都是严重稀释的
 # 2. 圣遗物的攻击副词条和精通副词条最好一个都没有，全歪双暴
 # 3. （打蔓激化时）天空之翼和弹弓的差距真的不大！！！
+
+
+# traces = [
+#     scatter(x=Ts, y=100 * bs, name="attack: green/white %"),
+#     scatter(x=Ts, y=100 * crs, name="critical rate %"),
+#     scatter(x=Ts, y=100 * cds, name="critical damage %"),
+#     scatter(x=Ts, y=100 * dbs, name="damage bonus %"),
+#     scatter(x=Ts, y=masters, name="master", yaxis="y2")
+# ]
+# plot(traces,
+#     Layout(
+#         title_text="optimal allocation of artifact stats",
+#         xaxis_title_text="T",
+#         yaxis_title_text="%",
+#         # legend=:topright,
+#         yaxis2=attr(
+#             title="master",
+#             overlaying="y",
+#             side="right"
+#         )
+#     )
+# )

@@ -49,7 +49,7 @@ plot(Ts, [100 * bs 100 * crs 100 * cds 100 * dbs],
     xlabel=L"T", yaxis=L"\%",
     title="optimize artifact stats: wanderer single",
     legend=:outerright)
-savefig("./artifacts/img/artifact-stats-wanderer-single.png")
+savefig("./artifact-optimizer/img/artifact-stats-wanderer-single.png")
 
 
 ##############################################
@@ -112,6 +112,7 @@ bs = similar(Ts)
 crs = similar(Ts)
 cds = similar(Ts)
 dbs = similar(Ts)
+outputs = similar(Ts)
 
 for i in 1:length(Ts)
     m = Model()
@@ -127,14 +128,45 @@ for i in 1:length(Ts)
     crs[i] = value(cr)
     cds[i] = value(cd)
     dbs[i] = value(db)
+    outputs[i] = objective_value(m)
 end
 
 
 # plotlyjs()
 gr()
+
 plot(Ts, [100 * bs 100 * crs 100 * cds 100 * dbs],
     label=["attack: green/white" "critical rate" "critical damage" "damage bonus"],
     xlabel=L"T", yaxis=L"\%",
     title="optimize artifact stats: wanderer team",
     legend=:outerright)
-savefig("./artifacts/img/artifact-stats-wanderer-team.png")
+savefig("./artifact-optimizer/img/artifact-stats-wanderer-team.png")
+
+
+
+
+plot(Ts, outputs ./ outputs[261],
+    label="", title="output ratio to now", xlabel=L"T")
+
+# 目前百分比攻击、双暴副词条数目为24，其中真正比较有效的双暴副词条只有16.9个
+# 如果每个圣遗物双暴歪两次，平均贡献5个双暴词条，则共有25词条，增加了8词条
+@show Ts[341] Ts[261];
+println("Output increases by ", 100 * (outputs[341] / outputs[261] - 1), "%")
+# 可以增加输出 16%，这是可以追求的
+
+# 更理想的情况：每个圣遗物双暴最多歪一次，平均贡献6词条，则共有30词条，比目前增加了13词条
+@show Ts[391] Ts[261];
+println("Output increases by ", 100 * (outputs[391] / outputs[261] - 1), "%")
+# 输出增加 26%，但这已经时可遇而不可求的小概率事件了
+
+# 至于理论上最顶级的圣遗物，双暴全不歪，会有34个双暴词条（暴击头和暴伤头最多只有6个双暴副词条），增加17词条
+@show Ts[431] Ts[261];
+println("Output increases by ", 100 * (outputs[441] / outputs[261] - 1), "%")
+# 输出增加 37%
+
+# 平均而言，一个双暴词条能增加输出：
+(exp(log(outputs[441] / outputs[261]) / 18) - 1) * 100
+# 即 1.76% 左右
+# 平均 10 个词条增加输出
+100 * (outputs[361] / outputs[261] - 1)
+# 即20%
